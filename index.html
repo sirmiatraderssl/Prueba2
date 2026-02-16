@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tec.K2 Integral PRO</title>
+
+  <!-- Fonts: premium contrast (light aesthetic) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Light premium palette */
+      --bg: #f6f7fb;
+      --bg2:#ffffff;
+      --ink:#0f172a;
+      --muted:#475569;
+      --muted2:#64748b;
+      --line: rgba(15, 23, 42, .10);
+      --card: rgba(255,255,255,.82);
+      --shadow: 0 20px 60px rgba(2, 6, 23, .12);
+      --shadow2: 0 10px 30px rgba(2, 6, 23, .10);
+
+      /* Accent (mint) */
+      --a:#00d9b0;
+      --a2:#00b894;
+
+      --r: 18px;
+      --r2: 26px;
+
+      --max: 1180px;
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 600px at 12% 0%, rgba(0,217,176,.16), transparent 55%),
+        radial-gradient(900px 600px at 90% 10%, rgba(0,217,176,.10), transparent 55%),
+        linear-gradient(180deg, #ffffff, var(--bg));
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .container{ max-width: var(--max); margin:0 auto; padding: 0 18px; }
+
+    /* Subtle noise overlay (Awwwards-ish) */
+    .noise{
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      opacity:.06; mix-blend-mode:multiply;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    }
+
+    /* Topbar */
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(16px);
+      background: rgba(246,247,251,.72);
+      border-bottom: 1px solid rgba(15,23,42,.08);
+    }
+    .topbar-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 0; gap: 14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      min-width: 220px;
+    }
+    .mark{
+      width:42px; height:42px; border-radius: 14px;
+      background: linear-gradient(145deg, rgba(0,217,176,.22), rgba(0,217,176,.06));
+      border: 1px solid rgba(0,217,176,.30);
+      box-shadow: 0 10px 30px rgba(0,217,176,.12);
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 800;
+      color: var(--a2);
+      letter-spacing:.4px;
+    }
+    .brand-title{ font-weight:800; line-height:1.05; }
+    .brand-sub{ font-size:.86rem; color: var(--muted2); font-weight:600; margin-top:2px; }
+
+    nav{
+      display:flex; gap: 18px; flex-wrap:wrap;
+      font-weight:700; font-size:.95rem;
+      color: rgba(15,23,42,.72);
+    }
+    nav a{ opacity:.92; }
+    nav a:hover{ opacity:1; }
+
+    .actions{ display:flex; gap:10px; align-items:center; }
+
+    /* Buttons */
+    .btn{
+      position:relative;
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:10px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-weight: 800;
+      border: 1px solid transparent;
+      cursor:pointer;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+      white-space:nowrap;
+      user-select:none;
+    }
+    .btn.primary{
+      background: linear-gradient(135deg, var(--a), var(--a2));
+      color:#062018;
+      box-shadow: 0 14px 40px rgba(0,217,176,.22);
+    }
+    .btn.primary:hover{ transform: translateY(-1px); box-shadow: 0 18px 52px rgba(0,217,176,.28); }
+    .btn.ghost{
+      background: rgba(255,255,255,.78);
+      border-color: rgba(15,23,42,.10);
+      color: var(--ink);
+      box-shadow: 0 10px 30px rgba(2,6,23,.08);
+    }
+    .btn.ghost:hover{ transform: translateY(-1px); border-color: rgba(0,217,176,.28); }
+
+    /* Shine effect */
+    .btn:before{
+      content:"";
+      position:absolute; inset:-1px;
+      border-radius: 14px;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.55), transparent);
+      transform: translateX(-120%);
+      transition: transform .55s ease;
+      pointer-events:none;
+      opacity:.35;
+    }
+    .btn:hover:before{ transform: translateX(120%); }
+
+    /* Hero */
+    header.hero{
+      position:relative; z-index:1;
+      padding: 34px 0 18px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+
+    .panel{
+      background: var(--card);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hero-copy{
+      padding: 30px;
+      position:relative;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(0,217,176,.10);
+      border: 1px solid rgba(0,217,176,.22);
+      color: rgba(6,32,24,.86);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+    .badge i{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--a2);
+      box-shadow: 0 0 18px rgba(0,217,176,.35);
+      display:inline-block;
+    }
+
+    h1{
+      font-family: 'Fraunces', serif;
+      margin: 14px 0 10px;
+      font-size: clamp(2.1rem, 3.3vw, 3.25rem);
+      line-height: 1.02;
+      letter-spacing: -.2px;
+    }
+    .lead{
+      margin: 0 0 16px;
+      color: rgba(15,23,42,.78);
+      font-size: 1.05rem;
+      line-height: 1.65;
+      max-width: 64ch;
+      font-weight: 600;
+    }
+    .cta-row{
+      display:flex; gap:12px; flex-wrap:wrap;
+      margin-top: 18px;
+    }
+
+    .trust-row{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top: 18px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow2);
+      font-weight: 800;
+      color: rgba(15,23,42,.76);
+      font-size: .92rem;
+    }
+    .chip span{
+      width:9px; height:9px; border-radius:50%;
+      background: rgba(15,23,42,.28);
+      display:inline-block;
+    }
+
+    .hero-legal{
+      margin-top: 14px;
+      color: rgba(71,85,105,.9);
+      font-size: .88rem;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    /* Hero visual */
+    .hero-visual{
+      position:relative;
+      min-height: 460px;
+    }
+    .hero-visual .stack{
+      height:100%;
+      display:grid;
+      grid-template-rows: 1fr;
+    }
+    .hero-visual img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transform: scale(1.02);
+    }
+    .hero-visual:after{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.0), rgba(255,255,255,.75)),
+        radial-gradient(900px 500px at 75% 20%, rgba(0,217,176,.18), transparent 60%);
+      pointer-events:none;
+    }
+
+    /* Floating mini cards */
+    .float-card{
+      position:absolute;
+      left: 18px; bottom: 18px;
+      right: 18px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .mini{
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: 18px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+    }
+    .mini b{ display:block; font-size:.95rem; }
+    .mini p{ margin: 6px 0 0; color: rgba(71,85,105,.95); font-weight:600; font-size:.9rem; line-height:1.4; }
+
+    /* Sections */
+    section{ position:relative; z-index:1; padding: 34px 0; }
+    .section-head{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    h2{
+      font-family:'Fraunces', serif;
+      margin:0;
+      font-size: clamp(1.55rem, 2.2vw, 2.05rem);
+      letter-spacing: -.15px;
+    }
+    .subnote{
+      color: rgba(71,85,105,.9);
+      font-weight: 700;
+      font-size: .95rem;
+      max-width: 52ch;
+      text-align:right;
+    }
+
+    /* Card grids */
+    .grid3{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .card{
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: var(--r);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(0,217,176,.26);
+      box-shadow: 0 18px 46px rgba(2,6,23,.12);
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(500px 200px at 20% 0%, rgba(0,217,176,.16), transparent 55%);
+      opacity:.55;
+      pointer-events:none;
+    }
+    .card h3{
+      margin:0 0 8px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      position:relative;
+    }
+    .card p{
+      margin:0;
+      color: rgba(71,85,105,.95);
+      font-weight: 600;
+      line-height: 1.55;
+      position:relative;
+    }
+
+    /* Full width image band */
+    .band{
+      margin-top: 14px;
+      border-radius: var(--r2);
+      overflow:hidden;
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow);
+      background: #fff;
+    }
+    .band img{
+      width:100%;
+      height: 420px;
+      object-fit: cover;
+      display:block;
+    }
+    .band .overlay{
+      position:absolute;
+      inset:auto 0 0 0;
+      padding: 18px;
+      color:#0f172a;
+    }
+
+    /* Split section */
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items:stretch;
+    }
+    .box{
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: var(--r2);
+      box-shadow: var(--shadow2);
+      padding: 20px;
+    }
+    .box p, .box li{
+      color: rgba(71,85,105,.95);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+    ul{ margin: 10px 0 0 18px; }
+    li{ margin: 8px 0; }
+
+    /* Price */
+    .price{
+      background: linear-gradient(135deg, rgba(0,217,176,.18), rgba(255,255,255,.78));
+      border: 1px solid rgba(0,217,176,.22);
+    }
+    .price-top{
+      display:flex; align-items:flex-end; justify-content:space-between;
+      gap: 12px; flex-wrap:wrap;
+    }
+    .pvp{
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -.5px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(15,23,42,.10);
+      font-weight: 900;
+      color: rgba(15,23,42,.78);
+      box-shadow: var(--shadow2);
+      white-space:nowrap;
+    }
+    .disclaimer{
+      margin-top: 12px;
+      font-size: .92rem;
+      color: rgba(71,85,105,.95);
+      font-weight: 650;
+      line-height: 1.55;
+    }
+
+    /* FAQ */
+    details{
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.10);
+      border-radius: 18px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow2);
+    }
+    details + details{ margin-top: 10px; }
+    summary{
+      cursor:pointer;
+      font-weight: 900;
+      list-style:none;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    details p{
+      margin: 10px 0 0;
+      color: rgba(71,85,105,.95);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    /* Contact */
+    form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    input, textarea, select{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.82);
+      color: var(--ink);
+      font-weight: 650;
+      font-size: 1rem;
+      outline:none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    input:focus, textarea:focus, select:focus{
+      border-color: rgba(0,217,176,.45);
+      box-shadow: 0 0 0 4px rgba(0,217,176,.12);
+    }
+    textarea{ grid-column: 1 / -1; min-height: 120px; resize: vertical; }
+    .form-actions{
+      grid-column: 1 / -1;
+      display:flex; gap:12px; flex-wrap:wrap; align-items:center;
+      margin-top: 4px;
+    }
+    .whatsapp{
+      background: #25D366;
+      color: #062a12;
+      border: 1px solid rgba(6,42,18,.12);
+      box-shadow: 0 14px 40px rgba(37,211,102,.18);
+    }
+    .whatsapp:hover{ transform: translateY(-1px); box-shadow: 0 18px 52px rgba(37,211,102,.22); }
+
+    /* Footer */
+    footer{
+      padding: 26px 0 38px;
+      border-top: 1px solid rgba(15,23,42,.10);
+      color: rgba(71,85,105,.95);
+      font-weight: 650;
+      font-size: .92rem;
+    }
+    .foot{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 14px; flex-wrap:wrap;
+    }
+    .foot a{
+      color: rgba(0,184,148,.92);
+      font-weight: 900;
+    }
+    .foot a:hover{ text-decoration: underline; }
+
+    /* Scroll reveal */
+    .reveal{ opacity:0; transform: translateY(14px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.show{ opacity:1; transform:none; }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      nav{ display:none; }
+      .hero-grid{ grid-template-columns: 1fr; }
+      .hero-visual{ min-height: 360px; }
+      .grid3{ grid-template-columns: 1fr; }
+      .split{ grid-template-columns: 1fr; }
+      form{ grid-template-columns: 1fr; }
+      .subnote{ text-align:left; }
+      .float-card{ grid-template-columns: 1fr; }
+      .band img{ height: 320px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="noise"></div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="container">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="mark">K2</div>
+          <div>
+            <div class="brand-title">Tec.K2 Integral PRO</div>
+            <div class="brand-sub">Sistema integral anti-cal (impulsos electromagnéticos)</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn ghost" href="#precio">Ver PVP</a>
+          <a class="btn primary" href="#contacto">Solicitar visita</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-grid">
+
+        <div class="panel hero-copy reveal">
+          <span class="badge"><i></i> Visita informativa sin compromiso · Instalación incluida</span>
+
+          <h1>Una instalación más protegida. <br>Sin sales. Sin químicos.</h1>
+
+          <p class="lead">
+            Tec.K2 Integral PRO es un sistema de impulsos electromagnéticos diseñado para
+            <strong>ayudar a reducir los efectos asociados a la acumulación de cal</strong>
+            en instalaciones domésticas (tuberías, grifería y electrodomésticos).
+          </p>
+
+          <div class="cta-row">
+            <a class="btn primary" href="#contacto">Solicitar oferta / Visita técnica</a>
+            <a class="btn ghost" href="#como-funciona">Cómo funciona</a>
+          </div>
+
+          <div class="trust-row">
+            <div class="chip"><span></span> Instalación incluida</div>
+            <div class="chip"><span></span> Revisión anual recomendada</div>
+            <div class="chip"><span></span> Consumo muy bajo (típicamente &lt; 1 W)</div>
+          </div>
+
+          <p class="hero-legal">
+            *Los resultados dependen de dureza del agua, material/diámetro de tubería, caudal y hábitos de uso.
+            Este producto no sustituye tratamientos exigidos por normativa en instalaciones específicas.
+          </p>
+        </div>
+
+        <div class="panel hero-visual reveal">
+          <div class="stack">
+            <!-- Imagen principal (cocina) -->
+            <img src="/assets/img/tec-k2-hero.jpg" alt="Tec.K2 Integral PRO en cocina" loading="eager">
+          </div>
+
+          <div class="float-card">
+            <div class="mini">
+              <b>Servicio incluido</b>
+              <p>Instalación profesional + configuración inicial durante la visita.</p>
+            </div>
+            <div class="mini">
+              <b>Enfoque preventivo</b>
+              <p>Ayuda a minimizar incidencias vinculadas a la cal con el uso diario.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- BENEFICIOS -->
+  <section id="beneficios">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>Beneficios que el cliente entiende en 10 segundos</h2>
+        <div class="subnote">Enfoque preventivo: instalación, grifería y electrodomésticos.</div>
+      </div>
+
+      <div class="grid3">
+        <div class="card reveal">
+          <h3>Instalación más protegida</h3>
+          <p>Diseñado para ayudar a reducir la acumulación de cal asociada al uso en tuberías y puntos de consumo.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Menos incidencias “típicas”</h3>
+          <p>Puede contribuir a disminuir problemas vinculados a la cal en lavadora, lavavajillas, termo y grifería.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Sin consumibles</h3>
+          <p>No requiere sales ni cartuchos. Pensado para funcionar sin reposiciones habituales.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANDA FULL WIDTH (estética premium) -->
+  <section>
+    <div class="container">
+      <div class="band reveal">
+        <img src="/assets/img/tec-k2-kitchen-wide.jpg" alt="Tec.K2 Integral PRO en cocina - plano amplio" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section id="como-funciona">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>Cómo funciona (sin humo)</h2>
+        <div class="subnote">Explicación corta: instalación + configuración + revisión recomendada.</div>
+      </div>
+
+      <div class="split">
+        <div class="box reveal">
+          <h3 style="margin:0 0 8px; font-weight:900;">Instalación en el punto adecuado</h3>
+          <p>
+            Se instala en la tubería principal (según viabilidad y acceso). La configuración se ajusta al caso durante la visita.
+          </p>
+          <ul>
+            <li>Montaje profesional del sistema.</li>
+            <li>Configuración inicial y verificación de funcionamiento.</li>
+            <li>Recomendaciones específicas para el hogar.</li>
+          </ul>
+        </div>
+
+        <div class="box reveal">
+          <h3 style="margin:0 0 8px; font-weight:900;">Mantenimiento recomendado</h3>
+          <p>
+            Para mantener el conjunto en condiciones óptimas, se recomienda una revisión anual del bobinado y cableado.
+          </p>
+          <ul>
+            <li>Inspección visual de bobinados y conectores.</li>
+            <li>Comprobación de fijaciones y estado general.</li>
+            <li>Ajustes si procede.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="band reveal" style="margin-top:14px;">
+        <img src="/assets/img/tec-k2-install.jpg" alt="Tec.K2 Integral PRO instalado con bobinados en tubería" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- QUÉ INCLUYE + GALERÍA CORTA -->
+  <section id="incluye">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>Qué incluye</h2>
+        <div class="subnote">Sin letra pequeña: visita, instalación y soporte.</div>
+      </div>
+
+      <div class="split">
+        <div class="box reveal">
+          <h3 style="margin:0 0 8px; font-weight:900;">Incluido en la visita</h3>
+          <ul>
+            <li>Instalación profesional (según viabilidad y acceso).</li>
+            <li>Configuración inicial y comprobación.</li>
+            <li>Soporte post-instalación y orientación de uso.</li>
+          </ul>
+        </div>
+
+        <div class="box reveal">
+          <h3 style="margin:0 0 8px; font-weight:900;">Producto</h3>
+          <p>
+            Sistema con pantalla de control y arquitectura electrónica orientada a operación estable en entorno doméstico.
+          </p>
+          <p style="margin-top:10px;">
+            <strong>Propiedad industrial:</strong> integra desarrollos protegidos (p. ej., modelos de utilidad) vinculados a
+            elementos de arquitectura electrónica y componentes de conexión/instalación.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:14px;">
+        <div class="card reveal">
+          <h3>Estética premium</h3>
+          <p>Diseño pensado para integrarse en entornos domésticos modernos.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Consumo mínimo</h3>
+          <p>Consumo energético muy bajo (típicamente &lt; 1 W).</p>
+        </div>
+        <div class="card reveal">
+          <h3>Sin sales</h3>
+          <p>Enfoque sin consumibles habituales (sin sal ni cartuchos).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMÁGENES (presentación) -->
+  <section id="galeria">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>Galería</h2>
+        <div class="subnote">Presentación del equipo (hogar).</div>
+      </div>
+
+      <div class="split">
+        <div class="band reveal" style="margin:0;">
+          <img src="/assets/img/tec-k2-kitchen-2.jpg" alt="Tec.K2 Integral PRO en cocina" loading="lazy">
+        </div>
+        <div class="band reveal" style="margin:0;">
+          <img src="/assets/img/tec-k2-kitchen-3.jpg" alt="Tec.K2 Integral PRO en encimera" loading="lazy">
+        </div>
+      </div>
+
+      <div class="band reveal" style="margin-top:14px;">
+        <img src="/assets/img/tec-k2-box.jpg" alt="Caja Tec.K2 Integral PRO" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- PRECIO -->
+  <section id="precio">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>Precio</h2>
+        <div class="subnote">Tarifa pública orientativa (confirmación tras valoración del caso).</div>
+      </div>
+
+      <div class="box price reveal">
+        <div class="price-top">
+          <div>
+            <div style="color:rgba(71,85,105,.95); font-weight:800;">PVP recomendado</div>
+            <div class="pvp">4.200 €</div>
+          </div>
+          <div class="pill">Instalación incluida</div>
+        </div>
+
+        <div class="disclaimer">
+          El precio mostrado es <strong>recomendado/orientativo</strong> y puede variar por condiciones de instalación,
+          configuración técnica, condiciones comerciales y campañas vigentes. El precio final se determina tras valorar el caso concreto.
+          <br><br>
+          Este sitio web informa sobre el producto. El presupuesto final y las condiciones de venta serán definidos por el comercializador.
+        </div>
+
+        <div class="cta-row" style="margin-top:14px;">
+          <a class="btn primary" href="#contacto">Solicitar oferta / Visita técnica</a>
+          <a class="btn ghost" href="#faq">Resolver dudas</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>FAQ</h2>
+        <div class="subnote">Expectativas realistas, sin promesas absolutas.</div>
+      </div>
+
+      <details class="reveal">
+        <summary>¿Esto “elimina” la cal?</summary>
+        <p>
+          No hacemos promesas absolutas: el sistema está diseñado para <strong>ayudar a reducir los efectos asociados a la cal</strong>.
+          El resultado depende de dureza del agua, tipo de tubería, caudal y uso.
+        </p>
+      </details>
+
+      <details class="reveal">
+        <summary>¿Qué incluye la visita?</summary>
+        <p>Instalación (si el acceso lo permite), configuración inicial, comprobación de funcionamiento y recomendaciones.</p>
+      </details>
+
+      <details class="reveal">
+        <summary>¿Hay mantenimiento?</summary>
+        <p>Se recomienda una <strong>revisión anual</strong> para comprobar bobinados y cableado (medida preventiva).</p>
+      </details>
+
+      <details class="reveal">
+        <summary>¿Puedo obtener un precio cerrado sin visita?</summary>
+        <p>Podemos orientarte, pero el precio final se confirma tras valorar el punto de instalación y la configuración adecuada.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2>Solicitar visita / Oferta</h2>
+        <div class="subnote">Deja tus datos y te contactamos.</div>
+      </div>
+
+      <div class="box reveal">
+        <p style="margin:0; color:rgba(71,85,105,.95); font-weight:650; line-height:1.6;">
+          Déjanos tus datos y un técnico te contactará para confirmar disponibilidad, validar el punto de instalación y preparar una oferta ajustada.
+        </p>
+
+        <form action="#" method="post" aria-label="Formulario de contacto">
+          <input type="text" name="nombre" placeholder="Nombre y apellidos" required />
+          <input type="tel" name="telefono" placeholder="Teléfono" required />
+          <input type="email" name="email" placeholder="Email" required />
+          <select name="tipo_vivienda" required>
+            <option value="" disabled selected>Tipo de vivienda</option>
+            <option value="piso">Piso</option>
+            <option value="casa">Casa</option>
+            <option value="otro">Otro</option>
+          </select>
+          <textarea name="mensaje" placeholder="Cuéntanos tu caso (localidad, dureza aprox si la conoces, acceso a tubería, etc.)"></textarea>
+
+          <div class="form-actions">
+            <button class="btn primary" type="submit">Enviar solicitud</button>
+            <a class="btn whatsapp" href="https://wa.me/tu_numero" target="_blank" rel="noopener">WhatsApp</a>
+            <a class="btn ghost" href="#precio">Volver a precio</a>
+          </div>
+        </form>
+
+        <p style="margin:12px 0 0; color:rgba(71,85,105,.92); font-weight:650; font-size:.92rem; line-height:1.6;">
+          Textos legales:
+          <a href="https://sirmiatraderssl.github.io/PRUEBAS/aviso-legal.html">Aviso legal</a>,
+          <a href="https://sirmiatraderssl.github.io/PRUEBAS/privacidad.html">Privacidad</a>,
+          <a href="https://sirmiatraderssl.github.io/PRUEBAS/cookies.html">Cookies</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="foot">
+        <div>© <span id="y"></span> Tec.K2 Integral PRO</div>
+        <div style="display:flex; gap:14px; flex-wrap:wrap;">
+          <a href="https://sirmiatraderssl.github.io/PRUEBAS/aviso-legal.html">Aviso legal</a>
+          <a href="https://sirmiatraderssl.github.io/PRUEBAS/privacidad.html">Privacidad</a>
+          <a href="https://sirmiatraderssl.github.io/PRUEBAS/cookies.html">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Scroll reveal (subtle)
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('show');
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
